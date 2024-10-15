@@ -1,8 +1,30 @@
-import tkinter as tk 
+import tkinter as tk
+import json
+import os
 root = tk.Tk()
 root.title("Password Manager")
 root.geometry("400x300")
 root.resizable(0,0)
+
+def save():
+    website = web_entry.get()
+    username = username_entry.get()
+    password = password_entry.get()
+    append_data = {
+        website: {
+            "username": username,
+            "password": password
+        }
+    }
+    if os.path.exists("password.json"):
+        with open("password.json", "r") as file:
+            data = json.load(file)
+            data.update(append_data)
+    else:
+        data = append_data
+    with open("password.json","w") as file:
+        json.dump(data,file,indent=4)
+
 
 #creating input field
 Web_label = tk.Label(root,text="Website:") 
@@ -21,7 +43,7 @@ password_entry = tk.Entry(root,width=40)
 password_entry.pack(pady=5)
 
 #creating buttons for saving, retriving and displaying all passwords. 
-save_button = tk.Button(root, text="Save Password")
+save_button = tk.Button(root, text="Save Password", command=save)
 save_button.pack(pady=5)
 
 retrive_button = tk.Button(root, text="Retrive Password")
