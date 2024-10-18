@@ -2,19 +2,34 @@ import tkinter as tk
 import json
 import os
 from tkinter import messagebox
+from cryptography.fernet import Fernet
+
 root = tk.Tk()
 root.title("Password Manager")
 root.geometry("400x300")
 root.resizable(0,0)
 
+def encrypt():
+    if os.path.exists("key.txt"):
+        with open("key.txt","r") as file:
+            code = file.read().encode()
+            return code
+    else:
+        key = Fernet.generate_key()
+        with open("key.txt","w") as file:
+            file.write(key.decode())
+        with open("key.txt","r") as file:
+            code = file.read().encode()
+            return code
 def save():
     website = web_entry.get()
     username = username_entry.get()
     password = password_entry.get()
+    cypher_password = cypher.encrypt(password.encode()).decode()
     append_data = {
         website: {
             "username": username,
-            "password": password
+            "password": cypher_password
         }
     }
     if os.path.exists("password.json"):
@@ -37,7 +52,8 @@ def retrive():
             website = web_entry.get()
             if website in data:
                 username = data[website]["username"]
-                password = data[website]["password"]
+                cypher_password = data[website]["password"]
+                password = cypher.decrypt(cypher_password.encode()).decode()
                 messagebox.showinfo("Password",f"Website: {website}\nUsername: {username}\nPassword: {password}")
             else:
                 messagebox.showerror("Error"," Please provide the input field for the website")
@@ -52,11 +68,18 @@ def show():
             credential =""
             for key,value in data.items():
                 username = value.get("username")
-                password = value.get("password")
+                cypher_password = value.get("password")
+                password = cypher.decrypt(cypher_password.encode()).decode()
                 credential += f"Website: {key}\nUsername: {username}\nPassword: {password}\n\n"
             messagebox.showinfo("Passwords" ,credential)
     else:
         messagebox.showerror("Error","There is no saved passwords")
+
+if os.path.exists("user.json"):
+
+key = encrypt()
+cypher = Fernet(key)
+
 #creating input field
 Web_label = tk.Label(root,text="Website:") 
 Web_label.pack(pady=5)
