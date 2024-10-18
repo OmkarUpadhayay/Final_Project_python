@@ -1,6 +1,7 @@
 import tkinter as tk
 import json
 import os
+from tkinter import messagebox
 root = tk.Tk()
 root.title("Password Manager")
 root.geometry("400x300")
@@ -25,6 +26,17 @@ def save():
     with open("password.json","w") as file:
         json.dump(data,file,indent=4)
 
+def retrive():
+    if os.path.exists("password.json"):
+        with open("password.json", "r") as file:
+            data = json.load(file)
+            website = web_entry.get()
+            if website in data:
+                username = data[website]["username"]
+                password = data[website]["password"]
+                messagebox.showinfo("Password",f"Website: {website}\nUsername: {username}\nPassword: {password}")
+            else:
+                messagebox.showerror("Error"," Please provide the input field for the website")
 
 #creating input field
 Web_label = tk.Label(root,text="Website:") 
@@ -46,7 +58,7 @@ password_entry.pack(pady=5)
 save_button = tk.Button(root, text="Save Password", command=save)
 save_button.pack(pady=5)
 
-retrive_button = tk.Button(root, text="Retrive Password")
+retrive_button = tk.Button(root, text="Retrive Password", command=retrive)
 retrive_button.pack(pady=5)
 
 display_button = tk.Button(root, text="View all Passwords")
