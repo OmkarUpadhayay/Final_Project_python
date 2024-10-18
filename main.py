@@ -25,6 +25,10 @@ def save():
         data = append_data
     with open("password.json","w") as file:
         json.dump(data,file,indent=4)
+        messagebox.showinfo("Successful", "The following password has been saved")
+    web_entry.delete(0,tk.END)
+    username_entry.delete(0,tk.END)
+    password_entry.delete(0,tk.END)
 
 def retrive():
     if os.path.exists("password.json"):
@@ -37,7 +41,22 @@ def retrive():
                 messagebox.showinfo("Password",f"Website: {website}\nUsername: {username}\nPassword: {password}")
             else:
                 messagebox.showerror("Error"," Please provide the input field for the website")
+    else:
+        messagebox.showerror("Error","There is no saved password")
+    username_entry.delete(0, tk.END)
 
+def show():
+    if os.path.exists("password.json"):
+        with open("password.json","r") as file:
+            data= json.load(file)
+            credential =""
+            for key,value in data.items():
+                username = value.get("username")
+                password = value.get("password")
+                credential += f"Website: {key}\nUsername: {username}\nPassword: {password}\n\n"
+            messagebox.showinfo("Passwords" ,credential)
+    else:
+        messagebox.showerror("Error","There is no saved passwords")
 #creating input field
 Web_label = tk.Label(root,text="Website:") 
 Web_label.pack(pady=5)
@@ -61,7 +80,7 @@ save_button.pack(pady=5)
 retrive_button = tk.Button(root, text="Retrive Password", command=retrive)
 retrive_button.pack(pady=5)
 
-display_button = tk.Button(root, text="View all Passwords")
+display_button = tk.Button(root, text="View all Passwords",command=show)
 display_button.pack(pady=5)
 
 
