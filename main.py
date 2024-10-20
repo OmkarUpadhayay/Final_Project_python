@@ -75,7 +75,6 @@ def show():
     else:
         messagebox.showerror("Error","There is no saved passwords")
 
-if os.path.exists("user.json"):
 
 key = encrypt()
 cypher = Fernet(key)
